@@ -7,7 +7,7 @@
     {"source": "/artist-susan-woolgar/", "destination": "/artists/susan-woolgar/", "permanent": true},
     {"source": "/artist-page-paul-boultbee/", "destination": "/artists/paul-boultbee/", "permanent": true},
     {"source": "/blog-2/", "destination": "/news/", "permanent": true},
-    {"source": "/uncategorized/:path*", "destination": "/news/", "permanent": true},
+    {"source": "/uncategorized/(.*)", "destination": "/news/", "permanent": true},
     {"source": "/shop/", "destination": "/", "permanent": true},
     {"source": "/cart/", "destination": "/", "permanent": true},
     {"source": "/checkout/", "destination": "/", "permanent": true},
