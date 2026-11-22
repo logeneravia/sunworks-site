@@ -1,29 +1,42 @@
-# sunworks-site
+# Sunworks Living
 
-The replacement for the WordPress sunworks.ca — plain static HTML, deployed on
-Vercel, corrections through Claude, git push to deploy. Same pipeline as
-strumworks.
+The replacement for the public WordPress website. This version uses plain HTML,
+CSS and browser JavaScript, with two optional Vercel functions.
 
-## What's here
+## Editing
 
-- `index.html` — placeholder homepage (real rebuild comes later, from the
-  WP archive content)
-- `news/` — **the newsletter archive page**, first brick of the new site
-  - `news/issues.json` — one entry per issue (date, subject, archive URL,
-    cached thumbnail)
-  - `news/index.html` — generated, do not hand-edit
-- `tools/build_news.py` — regenerates `news/index.html` from `issues.json`
-- `wp-archive/` — **full scrape of the old WordPress site** (git-ignored,
-  283 MB): all pages/posts/media JSON, rendered HTML of every page, and all
-  282 media originals. Taken 2026-07-05 before GoDaddy hosting dies (Phase D
-  of the exit runbook in bank-tracker/docs/sunworks-godaddy-exit.md).
+- Each page has an `index.html` in its own folder. Shared type, colour and layout
+  live in `assets/site.css`.
+- `data/garage-sale.json` takes entries with a title, description, CAD price
+  (zero for giveaway), optional photo and alt text, and status (`available` or
+  `claimed`). Use a relative site image URL such as `/assets/listings/table.jpg`.
+- The news page shows the six newest newsletters with pictured excerpts and groups older letters by month. Edit `news/catalog.json` and run `python3 tools/build_news.py` to refresh it. It also includes six dated InTheKnow broadcasts.
+  Its Instagram preview and the SMS keyword signup link use the existing public
+  profile and confirmed InTheKnow destination.
 
-## Adding a newsletter issue to the archive
+## Connecting the public updates
 
-1. Add an entry to `news/issues.json` (date, subject, url — thumb is
-   auto-discovered)
-2. `python3 tools/build_news.py`
-3. Commit and push — Vercel deploys.
+Set `SUNWORKS_PUBLIC_UPDATES_URL` in the Vercel preview environment once a
+public-only feed is available. The expected data is a JSON object with
+`sms` and `newsletters`. An SMS has `date`, `text`, and `published: true`.
+Each newsletter has `date`, `title`, an HTTPS `url`, and `published: true`.
+Use ISO dates. Publish only staff-approved broadcast text and issue links.
+The site never needs subscriber records, reply content, or administrative
+credentials for reading these updates.
 
-Issue archive HTML lives in the Supabase public bucket `newsletter-archive`
-(chipsmsapp project); images in `newsletter-images`.
+## Connecting customer signup
+
+Set `SUNWORKS_CUSTOMER_SIGNUP_URL` and `SUNWORKS_CUSTOMER_SIGNUP_TOKEN` in the
+Vercel preview environment when a dedicated Arazzo opt-in endpoint is available.
+The website forwards email, first name, explicit email consent, and source over
+HTTPS using a scoped server-side credential. The receiving service owns
+deduplication, rate limits, consent records and any confirmation email. Until
+connected, visitors can request to join by email. Preview deployments also
+provide a fixed, non-persisting signup example. Text signup is separate and
+uses the existing SMS keyword.
+
+## Preview
+
+Deploy the source to the existing `sunworks-site` project under the
+Logeneravia Vercel team. A preview deployment is sufficient for review.
+The public `sunworks.ca` domain is attached when the replacement is approved.
