@@ -33,16 +33,55 @@ if (instagram && !instagram.querySelector('iframe')) {
   instagram.append(frame);
 }
 
+// Dates in the same look as the baked-in ones.
+function longDay(value) { // "Sunday, November 22"
+  return new Date(value + 'T12:00:00')
+    .toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+function shortDay(value) { // "Sat Nov 21"
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', {
+    weekday: 'short', month: 'short', day: 'numeric',
+  }).formatToParts(new Date(value + 'T12:00:00')).map((p) => [p.type, p.value]));
+  return `${parts.weekday.replace('.', '')} ${parts.month.replace('.', '')} ${parts.day}`;
+}
+
+// The latest InTheKnow texts come live from Strum through /api/updates; the
+// texts baked into the page stay when the feed is empty or unreachable.
 const latestText = byId('latest-text');
 if (latestText) {
-  getJson('/api/updates').then(({ sms, newsletters }) => {
-    if (sms) {
-      byId('text-date').dateTime = sms.date;
-      // Same look as the baked-in date: "Sunday, November 22".
-      byId('text-date').textContent = new Date(sms.date + 'T12:00:00')
-        .toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
-      byId('text-body').textContent = sms.text;
+  getJson('/api/updates').then(({ sms, texts, newsletters }) => {
+    const recent = texts?.length ? texts : (sms ? [sms] : []);
+    if (recent.length) {
+      byId('text-date').dateTime = recent[0].date;
+      byId('text-date').textContent = longDay(recent[0].date);
+      byId('text-body').textContent = recent[0].text;
       latestText.hidden = false;
+    }
+
+    // Home page: the two texts before the latest.
+    const earlier = byId('earlier-texts');
+    if (earlier && texts?.length > 1) {
+      earlier.replaceChildren(...texts.slice(1, 3).map((item) => {
+        const row = element('li');
+        const date = element('time', shortDay(item.date));
+        date.dateTime = item.date;
+        row.append(date, element('span', item.text));
+        return row;
+      }));
+    }
+
+    // What's new page: the previous texts under "Previous texts".
+    const previous = byId('previous-texts');
+    if (previous && texts?.length > 1) {
+      previous.replaceChildren(previous.querySelector('summary'), ...texts.slice(1, 6).map((item) => {
+        const card = element('article', '', 'past-text');
+        const label = element('p', '', 'eyebrow');
+        const date = element('time', longDay(item.date));
+        date.dateTime = item.date;
+        label.append(date);
+        card.append(label, element('p', item.text));
+        return card;
+      }));
     }
 
     const currentIssues = byId('current-issues');

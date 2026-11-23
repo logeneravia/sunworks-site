@@ -22,7 +22,7 @@ export default async function updates(req, res) {
   }
 
   const source = process.env.SUNWORKS_PUBLIC_UPDATES_URL;
-  if (!source) return res.status(200).json({ sms: null, newsletters: [] });
+  if (!source) return res.status(200).json({ sms: null, texts: [], newsletters: [] });
   try {
     const response = await fetch(source, {
       headers: { accept: 'application/json' },
@@ -31,10 +31,16 @@ export default async function updates(req, res) {
     });
     if (!response.ok) throw new Error('Update source unavailable');
     const data = await response.json();
-    const sms = data.sms?.published === true && publicDate(data.sms.date) &&
-      typeof data.sms.text === 'string' && data.sms.text.trim()
-      ? { date: data.sms.date, text: data.sms.text.trim().slice(0, 1800) }
+    const publicText = (item) => item?.published === true && publicDate(item.date) &&
+      typeof item.text === 'string' && item.text.trim()
+      ? { date: item.date, text: item.text.trim().slice(0, 1800) }
       : null;
+    const sms = publicText(data.sms);
+    // Recent texts, newest first (the Strum public-texts feed sends up to six).
+    const texts = (Array.isArray(data.texts) ? data.texts : [])
+      .map(publicText).filter(Boolean)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 6);
     const newsletters = (Array.isArray(data.newsletters) ? data.newsletters : [])
       .filter((item) => item?.published === true && publicDate(item.date) &&
         typeof item.title === 'string' && item.title.trim() && publicUrl(item.url))
@@ -42,8 +48,8 @@ export default async function updates(req, res) {
       .slice(0, 6)
       .map(({ date, title, url }) => ({ date, title: title.trim().slice(0, 200), url }));
     res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=180, stale-while-revalidate=600');
-    return res.status(200).json({ sms, newsletters });
+    return res.status(200).json({ sms, texts, newsletters });
   } catch {
-    return res.status(503).json({ sms: null, newsletters: [] });
+    return res.status(503).json({ sms: null, texts: [], newsletters: [] });
   }
 }

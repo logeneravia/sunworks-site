@@ -84,7 +84,7 @@ past_texts = "".join(
 )
 texts_fragment = f'''<!-- TEXTS START -->
  <div id="latest-text"><p class="eyebrow"><time id="text-date" datetime="{texts[0]["date"]}">{text_day(texts[0]["date"])}</time></p><p id="text-body">{escape(texts[0]["text"])}</p></div>
- <details><summary>Previous texts</summary>{past_texts}</details>
+ <details id="previous-texts"><summary>Previous texts</summary>{past_texts}</details>
  <!-- TEXTS END -->'''
 
 
@@ -123,7 +123,7 @@ home_fragment = f'''<!-- HAPPENING START -->
    <h2 class="card-label" id="text-heading">Latest text</h2>
    <div id="latest-text"><p class="eyebrow"><time id="text-date" datetime="{texts[0]["date"]}">{text_day(texts[0]["date"])}</time></p>
    <p id="text-body" class="text-now">{escape(texts[0]["text"])}</p></div>
-   <ul class="earlier-texts" aria-label="Earlier texts">{earlier_texts}</ul>
+   <ul class="earlier-texts" id="earlier-texts" aria-label="Earlier texts">{earlier_texts}</ul>
    <p class="card-links"><a class="text-link" href="/join/#texts">Get the daily text</a><a href="/news/#texts">Earlier texts</a></p>
   </article>
   <article class="happening-card happening-letter" aria-labelledby="letter-heading">
