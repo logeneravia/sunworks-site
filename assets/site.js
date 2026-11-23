@@ -122,6 +122,68 @@ function garageText(title) {
     : ask;
 }
 
+// Full-size photo viewer for the garage sale: the whole photo, uncropped,
+// with arrows when an item has more than one. Esc, the ✕ or a tap on the
+// dark background closes it.
+let viewer = null;
+function openViewer(pictures, start, title) {
+  if (!viewer) {
+    viewer = element('div', '', 'photo-viewer');
+    viewer.setAttribute('role', 'dialog');
+    viewer.setAttribute('aria-modal', 'true');
+    viewer.hidden = true;
+    const close = element('button', '✕', 'viewer-close');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close');
+    const prev = element('button', '‹', 'viewer-prev');
+    prev.type = 'button';
+    prev.setAttribute('aria-label', 'Previous photo');
+    const next = element('button', '›', 'viewer-next');
+    next.type = 'button';
+    next.setAttribute('aria-label', 'Next photo');
+    const img = element('img', '', 'viewer-image');
+    const count = element('p', '', 'viewer-count');
+    viewer.append(img, prev, next, close, count);
+    document.body.append(viewer);
+    const show = () => {
+      img.src = viewer.pictures[viewer.at];
+      img.alt = `${viewer.title}, photo ${viewer.at + 1} of ${viewer.pictures.length}`;
+      const many = viewer.pictures.length > 1;
+      prev.hidden = next.hidden = !many;
+      count.textContent = many ? `${viewer.at + 1} of ${viewer.pictures.length}` : '';
+    };
+    const step = (by) => {
+      viewer.at = (viewer.at + by + viewer.pictures.length) % viewer.pictures.length;
+      show();
+    };
+    const shut = () => {
+      viewer.hidden = true;
+      document.body.style.overflow = '';
+      viewer.opener?.focus();
+    };
+    viewer.show = show;
+    viewer.shut = shut;
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    close.addEventListener('click', shut);
+    viewer.addEventListener('click', (event) => { if (event.target === viewer) shut(); });
+    document.addEventListener('keydown', (event) => {
+      if (viewer.hidden) return;
+      if (event.key === 'Escape') shut();
+      else if (event.key === 'ArrowLeft' && viewer.pictures.length > 1) step(-1);
+      else if (event.key === 'ArrowRight' && viewer.pictures.length > 1) step(1);
+    });
+  }
+  viewer.pictures = pictures;
+  viewer.at = start || 0;
+  viewer.title = title;
+  viewer.opener = document.activeElement;
+  viewer.show();
+  viewer.hidden = false;
+  document.body.style.overflow = 'hidden';
+  viewer.querySelector('.viewer-close').focus();
+}
+
 async function garageItems() {
   try {
     const response = await fetch(GARAGE_FEED, { headers: { Accept: 'application/json' } });
@@ -156,10 +218,23 @@ if (listings) {
         // thumbnails underneath that swap into the main spot when tapped.
         const pictures = item.photos?.length ? item.photos : (item.photo ? [item.photo] : []);
         if (pictures.length) {
-          const image = element('img');
+          // The card crops to fit; tapping opens the whole photo (Chip, Nov 23:
+          // "click on an item and see the whole photo").
+          let shown = 0;
+          const image = element('img', '', 'garage-photo');
           image.src = pictures[0];
           image.alt = item.photoAlt || item.title;
           image.loading = 'lazy';
+          image.tabIndex = 0;
+          image.setAttribute('role', 'button');
+          image.setAttribute('aria-label', `See the whole photo of ${item.title}`);
+          image.addEventListener('click', () => openViewer(pictures, shown, item.title));
+          image.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              openViewer(pictures, shown, item.title);
+            }
+          });
           card.append(image);
           if (pictures.length > 1) {
             const strip = element('div', '', 'garage-thumbs');
@@ -175,6 +250,7 @@ if (listings) {
               pick.append(thumb);
               pick.addEventListener('click', () => {
                 image.src = src;
+                shown = i;
                 for (const other of strip.children) other.setAttribute('aria-pressed', String(other === pick));
               });
               strip.append(pick);
@@ -184,6 +260,10 @@ if (listings) {
         }
         const price = item.price === 0 ? 'Free' : currency.format(item.price);
         card.append(element('h3', item.title), element('p', price, 'price'));
+        // How many there are (Nov 23), when it's more than one and not gone.
+        if (item.quantity > 1 && item.status !== 'claimed') {
+          card.append(element('p', `${item.quantity} available`, 'garage-qty'));
+        }
         if (item.description) card.append(element('p', item.description));
         if (item.status === 'claimed') {
           card.append(element('p', 'Claimed'));
