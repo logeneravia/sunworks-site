@@ -102,10 +102,25 @@ if (latestText) {
 
 // Garage sale: staff add items at staff.sunworks.ca/garage (Nov 22); this page
 // reads the live public feed, falling back to the static file. Contact: Chip,
-// Nov 22: "They could text my personal phone number or email." Chip chose
-// his cell for texts and the shop address for email (Nov 22).
+// Nov 22: "They could text my personal phone number or email." Then: "I want
+// people to text me so maybe strumworks would be best" — texts go to the
+// Sunworks Strum number (the 431 line), which lands in the Strum inbox, texts
+// Chip an alert and prints a reply slip; email goes to the shop address.
 const GARAGE_FEED = 'https://staff.sunworks.ca/api/garage-public';
-const GARAGE_CONTACT = { sms: '+14033023580', email: 'shop@sunworks.ca' };
+const GARAGE_CONTACT = { sms: '+14313403455', email: 'shop@sunworks.ca' };
+
+// Strum signs up anyone whose text CONTAINS a list's join keyword once spaces
+// and punctuation are stripped (live keyword, Nov 22: "intheknow"). So the
+// pre-filled text avoids "in the" before the item name, and falls back to a
+// generic line if an item's own name would still trip it.
+const STRUM_JOIN_KEYWORDS = ['intheknow'];
+function garageText(title) {
+  const ask = 'Hi, is the ' + title + ' from the Sunworks garage sale still available?';
+  const flat = ask.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return STRUM_JOIN_KEYWORDS.some((k) => flat.includes(k))
+    ? 'Hi, I have a question about an item in the Sunworks garage sale.'
+    : ask;
+}
 
 async function garageItems() {
   try {
@@ -154,8 +169,7 @@ if (listings) {
           const ask = element('p', '', 'garage-ask');
           if (GARAGE_CONTACT.sms) {
             const text = element('a', 'Text about this item', 'text-link');
-            text.href = 'sms:' + GARAGE_CONTACT.sms + '?body=' +
-              encodeURIComponent('Hi, I’m interested in the ' + item.title + ' from the Sunworks garage sale.');
+            text.href = 'sms:' + GARAGE_CONTACT.sms + '?body=' + encodeURIComponent(garageText(item.title));
             ask.append(text, document.createTextNode('  ·  '));
           }
           const mail = element('a', GARAGE_CONTACT.sms ? 'Email' : 'Ask about this item', 'text-link');
