@@ -196,3 +196,9 @@ h3 {font-size:clamp(1.9rem,3.4vw,3rem);}
  .happening-grid {grid-template-columns:1fr;}
  .text-now {font-size:1.4rem;}
 }
+/* Garage sale: thumbnails under an item's main photo (up to 5 photos, Nov 23). */
+.garage-thumbs {display:flex;flex-wrap:wrap;gap:.4rem;margin:-.6rem 0 1rem;}
+.garage-thumbs button {padding:0;border:2px solid transparent;border-radius:.25rem;background:none;cursor:pointer;line-height:0;}
+.garage-thumbs button[aria-pressed="true"] {border-color:var(--rust, #a4542d);}
+.garage-thumbs img {width:3.4rem;height:3.4rem;object-fit:cover;margin:0;border-radius:.15rem;}
+.panel .garage-thumbs img {width:3.4rem;height:3.4rem;margin:0;border-radius:.15rem;}

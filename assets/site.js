@@ -152,12 +152,35 @@ if (listings) {
           sample.setAttribute('aria-hidden', 'true');
           card.append(sample);
         }
-        if (item.photo) {
+        // Up to 5 photos per item (Nov 23): the main picture, then small
+        // thumbnails underneath that swap into the main spot when tapped.
+        const pictures = item.photos?.length ? item.photos : (item.photo ? [item.photo] : []);
+        if (pictures.length) {
           const image = element('img');
-          image.src = item.photo;
+          image.src = pictures[0];
           image.alt = item.photoAlt || item.title;
           image.loading = 'lazy';
           card.append(image);
+          if (pictures.length > 1) {
+            const strip = element('div', '', 'garage-thumbs');
+            pictures.forEach((src, i) => {
+              const pick = element('button');
+              pick.type = 'button';
+              pick.setAttribute('aria-label', `Photo ${i + 1} of ${pictures.length}`);
+              pick.setAttribute('aria-pressed', String(i === 0));
+              const thumb = element('img');
+              thumb.src = src;
+              thumb.alt = '';
+              thumb.loading = 'lazy';
+              pick.append(thumb);
+              pick.addEventListener('click', () => {
+                image.src = src;
+                for (const other of strip.children) other.setAttribute('aria-pressed', String(other === pick));
+              });
+              strip.append(pick);
+            });
+            card.append(strip);
+          }
         }
         const price = item.price === 0 ? 'Free' : currency.format(item.price);
         card.append(element('h3', item.title), element('p', price, 'price'));
