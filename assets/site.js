@@ -100,9 +100,26 @@ if (latestText) {
   }).catch(() => {});
 }
 
+// Garage sale: staff add items at staff.sunworks.ca/garage (Nov 22); this page
+// reads the live public feed, falling back to the static file. Contact: Chip,
+// Nov 22: "They could text my personal phone number or email."
+const GARAGE_FEED = 'https://staff.sunworks.ca/api/garage-public';
+const GARAGE_CONTACT = { sms: '', email: 'shop@sunworks.ca' };
+
+async function garageItems() {
+  try {
+    const response = await fetch(GARAGE_FEED, { headers: { Accept: 'application/json' } });
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data.items)) return data.items;
+    }
+  } catch { /* fall back to the static file */ }
+  return getJson('/data/garage-sale.json');
+}
+
 const listings = byId('listings');
 if (listings) {
-  getJson('/data/garage-sale.json').then((publishedItems) => {
+  garageItems().then((publishedItems) => {
     let items = publishedItems;
     const demo = byId('garage-demo');
     const filters = byId('listing-filters');
@@ -132,10 +149,18 @@ if (listings) {
         if (item.status === 'claimed') {
           card.append(element('p', 'Claimed'));
         } else if (!item.demo) {
-          const inquire = element('a', 'Ask about this item', 'text-link');
-          inquire.href = 'mailto:shop@sunworks.ca?subject=' +
-            encodeURIComponent('Sunworks garage sale: ' + item.title);
-          card.append(inquire);
+          const subject = 'Sunworks garage sale: ' + item.title;
+          const ask = element('p', '', 'garage-ask');
+          if (GARAGE_CONTACT.sms) {
+            const text = element('a', 'Text about this item', 'text-link');
+            text.href = 'sms:' + GARAGE_CONTACT.sms + '?body=' +
+              encodeURIComponent('Hi, I’m interested in the ' + item.title + ' from the Sunworks garage sale.');
+            ask.append(text, document.createTextNode('  ·  '));
+          }
+          const mail = element('a', GARAGE_CONTACT.sms ? 'Email' : 'Ask about this item', 'text-link');
+          mail.href = 'mailto:' + GARAGE_CONTACT.email + '?subject=' + encodeURIComponent(subject);
+          ask.append(mail);
+          card.append(ask);
         }
         return card;
       }));
