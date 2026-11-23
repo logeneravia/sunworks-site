@@ -21,16 +21,16 @@ function formatDay(value) {
   });
 }
 
+// Instagram shows straight away — no click needed (Chip, Nov 22: "we should
+// already show an instagram preview rather than making people click").
 const instagram = byId('instagram');
-if (instagram) {
-  instagram.addEventListener('toggle', () => {
-    if (!instagram.open || instagram.querySelector('iframe')) return;
-    const frame = element('iframe', '', 'instagram-frame');
-    frame.title = 'Recent Sunworks Living posts on Instagram';
-    frame.src = 'https://www.instagram.com/sunworksliving/embed/';
-    frame.referrerPolicy = 'strict-origin-when-cross-origin';
-    instagram.append(frame);
-  });
+if (instagram && !instagram.querySelector('iframe')) {
+  const frame = element('iframe', '', 'instagram-frame');
+  frame.title = 'Recent Sunworks Living posts on Instagram';
+  frame.src = 'https://www.instagram.com/sunworksliving/embed/';
+  frame.loading = 'lazy';
+  frame.referrerPolicy = 'strict-origin-when-cross-origin';
+  instagram.append(frame);
 }
 
 const latestText = byId('latest-text');
