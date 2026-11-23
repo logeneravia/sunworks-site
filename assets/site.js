@@ -102,9 +102,10 @@ if (latestText) {
 
 // Garage sale: staff add items at staff.sunworks.ca/garage (Nov 22); this page
 // reads the live public feed, falling back to the static file. Contact: Chip,
-// Nov 22: "They could text my personal phone number or email."
+// Nov 22: "They could text my personal phone number or email." Chip chose
+// his cell for texts and the shop address for email (Nov 22).
 const GARAGE_FEED = 'https://staff.sunworks.ca/api/garage-public';
-const GARAGE_CONTACT = { sms: '', email: 'shop@sunworks.ca' };
+const GARAGE_CONTACT = { sms: '+14033023580', email: 'shop@sunworks.ca' };
 
 async function garageItems() {
   try {
