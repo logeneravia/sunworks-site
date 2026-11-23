@@ -160,3 +160,39 @@ h3 {font-size:clamp(1.9rem,3.4vw,3rem);}
 @media(max-width:610px) {
  .history-archive .work {grid-template-columns:1fr;gap:.75rem;}
 }
+/* Home: "What’s happening at the shop" sits right under the green banner and address strip (Chip, Nov 22) */
+.happening {padding:clamp(1.6rem,4vw,3.2rem) 0 clamp(2.2rem,5vw,4rem);}
+.happening-head {margin-bottom:clamp(1.1rem,2.6vw,2rem);}
+.happening-head .eyebrow {margin-bottom:.55rem;}
+.happening-head h2 {font-size:clamp(2.75rem,4.4vw,4.45rem);line-height:.95;}
+.happening-head h2 em {color:var(--rust);}
+.happening-grid {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);gap:clamp(1rem,2.4vw,1.8rem);align-items:stretch;}
+.happening-card {background:#fffaf0;border:1px solid var(--line);padding:clamp(1.05rem,2.3vw,1.6rem);min-width:0;}
+.happening .card-label {font:700 .78rem/1.2 var(--body);text-transform:uppercase;letter-spacing:.13em;color:var(--ink);margin:0 0 .9rem;padding-bottom:.7rem;border-bottom:1px solid var(--line);}
+.happening-text .eyebrow {margin:0 0 .45rem;}
+.text-now {font:1.55rem/1.28 var(--display);white-space:pre-line;overflow-wrap:anywhere;}
+.earlier-texts {list-style:none;padding:0;margin:1.1rem 0 0;border-top:1px solid var(--line);}
+.earlier-texts li {padding:.65rem 0;border-bottom:1px solid var(--line);font-size:.92rem;color:var(--muted);}
+.earlier-texts time {display:block;font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink);}
+.earlier-texts span {display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-links {display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;margin:1rem 0 0;font-size:.95rem;}
+.letter-photo img {width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;margin-bottom:.9rem;}
+.happening-letter time {font-size:.87rem;color:var(--muted);}
+.happening-letter h3 {font-size:clamp(1.9rem,2.6vw,2.5rem);line-height:1;margin:.15rem 0 .6rem;}
+.happening-letter h3 a {text-decoration:none;}
+.happening-letter h3 a:hover,.happening-letter h3 a:focus-visible {text-decoration:underline;}
+.happening-letter p:not(.card-links) {color:var(--muted);}
+.ig-latest {container-type:inline-size;}
+.ig-latest .instagram-frame {display:block;margin:0;height:calc(var(--ig-head,150px) + 66.7cqw);background:#fff;}
+@media(max-width:980px) {
+ .happening-grid {grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+ .happening-ig {grid-column:1 / -1;}
+ .ig-latest {max-width:26rem;}
+}
+@media(max-width:700px) {
+ .ig-latest {max-width:none;}
+}
+@media(max-width:700px) {
+ .happening-grid {grid-template-columns:1fr;}
+ .text-now {font-size:1.4rem;}
+}

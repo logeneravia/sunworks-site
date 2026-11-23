@@ -13,6 +13,25 @@ CSS and browser JavaScript, with two optional Vercel functions.
 - The news page shows the six newest newsletters with pictured excerpts and groups older letters by month. Edit `news/catalog.json` and run `python3 tools/build_news.py` to refresh it. It also includes six dated InTheKnow broadcasts.
   Its Instagram preview and the SMS keyword signup link use the existing public
   profile and confirmed InTheKnow destination.
+- The home page opens with "What's happening at the shop": the latest InTheKnow
+  text with its date, the newest letter with its picture and first paragraph, and
+  the Instagram preview. Texts live in `news/texts.json` (date + text). After
+  adding a text or a letter, run `python3 tools/build_news.py`: it refreshes both
+  the news page and the home page block.
+
+## Adding photos to Our story
+
+The "Our story" link opens `the-beginning/index.html`. It has three kinds of
+photo spot: a full-width picture with a caption (the top one), a photo beside a
+paragraph (`<div class="work">`), and the "From the photo archive" grid.
+
+Prepare every new photo first, then place it under `img/content/`:
+
+    swift tools/prep_photo.swift <input> img/content/<short-name>.jpg
+
+The tool takes HEIC, JPEG or PNG, turns the picture upright, caps the long
+edge at 1600 px and drops camera details, dates and GPS location. Write
+alt text that describes the picture. `tools/` is not deployed.
 
 ## Connecting the public updates
 

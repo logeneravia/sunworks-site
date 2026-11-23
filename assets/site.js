@@ -38,7 +38,9 @@ if (latestText) {
   getJson('/api/updates').then(({ sms, newsletters }) => {
     if (sms) {
       byId('text-date').dateTime = sms.date;
-      byId('text-date').textContent = formatDay(sms.date);
+      // Same look as the baked-in date: "Sunday, November 22".
+      byId('text-date').textContent = new Date(sms.date + 'T12:00:00')
+        .toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' });
       byId('text-body').textContent = sms.text;
       latestText.hidden = false;
     }
