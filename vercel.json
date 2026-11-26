@@ -11,6 +11,8 @@
     {"source": "/shop/", "destination": "/", "permanent": true},
     {"source": "/cart/", "destination": "/", "permanent": true},
     {"source": "/checkout/", "destination": "/", "permanent": true},
-    {"source": "/my-account/", "destination": "/", "permanent": true}
+    {"source": "/my-account/", "destination": "/", "permanent": true},
+    {"source": "/podcast/", "destination": "/paul/#podcast", "permanent": false},
+    {"source": "/good-conversations/", "destination": "/paul/#podcast", "permanent": false}
   ]
 }
