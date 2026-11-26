@@ -241,3 +241,10 @@ h3 {font-size:clamp(1.9rem,3.4vw,3rem);}
 .project-card:hover h3 {color:var(--rust);}
 .project-card p:last-child {margin:0;}
 .podcast-intro {max-width:46rem;color:var(--muted);margin-bottom:0;}
+
+/* Community page funds (Nov 25 2026) */
+.fund-grid {grid-template-columns:repeat(2,minmax(0,1fr));margin-top:1.8rem;max-width:56rem;gap:2.4rem;}
+@media(max-width:760px) {.fund-grid {grid-template-columns:1fr;}}
+.fund-card {border-top:1px solid var(--line);padding-top:1rem;}
+.fund-card h3 {margin:.2rem 0 .6rem;}
+.fund-card .button {margin-top:.4rem;}
