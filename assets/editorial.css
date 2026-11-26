@@ -87,6 +87,11 @@ h3 {font-size:clamp(1.9rem,3.4vw,3rem);}
 .listing-title {font-size:2rem;}
 .listing-tag {font-size:.81rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;}
 .garage-placeholder-photo {width:100%;height:190px;background:#ece1d3;display:grid;place-items:center;color:#6f5141;font:2.2rem var(--display);margin-bottom:1rem;}
+/* Eight menu items (Community added Nov 25 2026): keep the menu on one line on laptop widths */
+@media(max-width:1260px) and (min-width:981px) {
+ .logo-label {display:none;}
+ .header-row nav {gap:.5rem 1.35rem;}
+}
 @media(max-width:980px) {
  .header-row {flex-direction:row;align-items:center;gap:1rem;}
  .logo-label {display:none;}
