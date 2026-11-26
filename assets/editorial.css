@@ -247,9 +247,21 @@ h3 {font-size:clamp(1.9rem,3.4vw,3rem);}
 .project-card p:last-child {margin:0;}
 .podcast-intro {max-width:46rem;color:var(--muted);margin-bottom:0;}
 
-/* Community page funds (Nov 25 2026) */
-.fund-grid {grid-template-columns:repeat(2,minmax(0,1fr));margin-top:1.8rem;max-width:56rem;gap:2.4rem;}
-@media(max-width:760px) {.fund-grid {grid-template-columns:1fr;}}
-.fund-card {border-top:1px solid var(--line);padding-top:1rem;}
-.fund-card h3 {margin:.2rem 0 .6rem;}
-.fund-card .button {margin-top:.4rem;}
+/* Community page (Nov 25 2026; spacing redone after Chip: "looks unprofessional") */
+.community-page .cm-section {padding-block:clamp(2.4rem,4.5vw,3.6rem);}
+.community-page .cm-section + .cm-section {border-top:1px solid var(--line);}
+.community-page .cm-section h2 {font-size:clamp(2.3rem,4vw,3.4rem);margin:0 0 1.1rem;}
+.cm-intro {max-width:46rem;color:var(--muted);margin:0 0 2rem;}
+.fund-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.6rem;}
+.fund-card {display:flex;flex-direction:column;background:#fffaf3;border:1px solid var(--line);border-top:3px solid var(--rust);padding:1.5rem 1.6rem 1.7rem;}
+.fund-card .eyebrow {margin:0 0 .5rem;}
+.fund-card h3 {margin:0 0 .8rem;font-size:clamp(1.7rem,2.6vw,2.2rem);}
+.fund-card p {margin:0 0 .8rem;}
+.fund-card .fund-action {margin:auto 0 0;padding-top:.6rem;}
+.give-ways {display:grid;gap:1rem;max-width:46rem;margin:0;}
+.give-ways div {display:grid;grid-template-columns:12rem 1fr;gap:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--line);}
+.give-ways dt {font-weight:700;}
+.give-ways dd {margin:0;}
+.cm-note {margin:1.4rem 0 0;color:var(--muted);font-size:.92rem;}
+.community-page .project-card h3 {font-size:clamp(1.7rem,2.6vw,2.2rem);}
+@media(max-width:760px) {.fund-grid {grid-template-columns:1fr;} .give-ways div {grid-template-columns:1fr;gap:.25rem;}}
