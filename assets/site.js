@@ -317,6 +317,140 @@ if (listings) {
   }).catch(() => {});
 }
 
+// Art: staff add pieces at staff.sunworks.ca/art (Chip, Nov 26 2026: "the
+// same way that the garage sale works"); artists fix their own bio and each
+// piece's title, description and story from their personal link. Any
+// element with data-art-feed shows the available pieces: data-art-feed=""
+// for every artist (the White Gallery page), data-art-feed="<slug>" for one
+// artist's page, which also takes its bio and statement from the feed.
+// Without the feed the page keeps its built-in text and hides the grid.
+const ART_FEED = 'https://staff.sunworks.ca/api/art-public';
+function artText(work) {
+  const ask = 'Hi, I’m interested in "' + work.title + '" by ' + work.artist + ' on the Sunworks website.';
+  const flat = ask.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return STRUM_JOIN_KEYWORDS.some((k) => flat.includes(k))
+    ? 'Hi, I have a question about a piece of art on the Sunworks website.'
+    : ask;
+}
+function paragraphs(text, className) {
+  const box = element('div', '', className);
+  for (const para of String(text || '').split(/\n\s*\n/)) {
+    if (!para.trim()) continue;
+    const p = element('p');
+    para.trim().split('\n').forEach((line, i) => {
+      if (i) p.append(element('br'));
+      p.append(document.createTextNode(line));
+    });
+    box.append(p);
+  }
+  return box;
+}
+function artCard(work, showArtist) {
+  const card = element('article', '', 'panel art-card');
+  const pictures = work.photos?.length ? work.photos : (work.photo ? [work.photo] : []);
+  if (pictures.length) {
+    let shown = 0;
+    const image = element('img', '', 'garage-photo art-photo');
+    image.src = pictures[0];
+    image.alt = `${work.title} by ${work.artist}`;
+    image.loading = 'lazy';
+    image.tabIndex = 0;
+    image.setAttribute('role', 'button');
+    image.setAttribute('aria-label', `See the whole picture of ${work.title}`);
+    const open = () => openViewer(pictures, shown, work.title);
+    image.addEventListener('click', open);
+    image.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); }
+    });
+    card.append(image);
+    if (pictures.length > 1) {
+      const strip = element('div', '', 'garage-thumbs');
+      pictures.forEach((src, i) => {
+        const pick = element('button');
+        pick.type = 'button';
+        pick.setAttribute('aria-label', `Photo ${i + 1} of ${pictures.length}`);
+        pick.setAttribute('aria-pressed', String(i === 0));
+        const thumb = element('img');
+        thumb.src = src; thumb.alt = ''; thumb.loading = 'lazy';
+        pick.append(thumb);
+        pick.addEventListener('click', () => {
+          image.src = src; shown = i;
+          for (const other of strip.children) other.setAttribute('aria-pressed', String(other === pick));
+        });
+        strip.append(pick);
+      });
+      card.append(strip);
+    }
+  } else {
+    const none = element('div', 'Photo coming', 'garage-placeholder-photo art-placeholder');
+    none.setAttribute('aria-hidden', 'true');
+    card.append(none);
+  }
+  if (showArtist) {
+    const by = element('a', work.artist, 'art-artist');
+    by.href = `/artists/${work.artist_slug}/`;
+    card.append(by);
+  }
+  card.append(element('h3', work.title));
+  const meta = [work.medium, work.size, work.year].filter(Boolean).join(' · ');
+  if (meta) card.append(element('p', meta, 'art-meta'));
+  const currency = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
+  card.append(element('p', work.price === null ? 'Price on request' : currency.format(work.price), 'price'));
+  if (work.quantity > 1) card.append(element('p', `${work.quantity} available`, 'garage-qty'));
+  if (work.location === 'studio') {
+    card.append(element('p', 'At the artist’s studio. Ask us and we’ll arrange a viewing.', 'art-where'));
+  }
+  if (work.description) card.append(paragraphs(work.description, 'art-description'));
+  if (work.narrative) {
+    const story = element('details', '', 'art-story');
+    story.append(element('summary', 'The story behind it'), paragraphs(work.narrative));
+    card.append(story);
+  }
+  const ask = element('p', '', 'garage-ask');
+  const text = element('a', 'Text about this piece', 'text-link');
+  text.href = 'sms:' + GARAGE_CONTACT.sms + '?body=' + encodeURIComponent(artText(work));
+  const mail = element('a', 'Email', 'text-link');
+  mail.href = 'mailto:' + GARAGE_CONTACT.email + '?subject=' +
+    encodeURIComponent(`Sunworks art: ${work.title} by ${work.artist}`);
+  ask.append(text, document.createTextNode('  ·  '), mail);
+  card.append(ask);
+  return card;
+}
+for (const grid of document.querySelectorAll('[data-art-feed]')) {
+  const slug = grid.dataset.artFeed;
+  const section = grid.closest('[data-art-section]');
+  fetch(ART_FEED + (slug ? '?artist=' + encodeURIComponent(slug) : ''), { headers: { Accept: 'application/json' } })
+    .then((response) => (response.ok ? response.json() : Promise.reject()))
+    .then(({ artists = [], works = [] }) => {
+      if (slug && artists[0]) {
+        // The artist's own words, as they last saved them.
+        const artist = artists[0];
+        const bio = byId('artist-bio');
+        if (bio && artist.bio) bio.replaceChildren(...paragraphs(artist.bio).childNodes);
+        const statement = byId('artist-statement');
+        if (statement && artist.statement) {
+          statement.querySelector('.art-statement-body')
+            .replaceChildren(...paragraphs(artist.statement).childNodes);
+          statement.hidden = false;
+        }
+        const web = byId('artist-website');
+        if (web && artist.website) {
+          const link = element('a', artist.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), 'text-link');
+          link.href = artist.website; link.rel = 'noopener';
+          web.replaceChildren(link); web.hidden = false;
+        }
+        const line = byId('artist-line');
+        if (line && artist.short_line) line.textContent = artist.short_line;
+        const name = byId('artist-name');
+        if (name && artist.name) name.textContent = artist.name;
+      }
+      if (!works.length) return;
+      grid.replaceChildren(...works.map((work) => artCard(work, !slug)));
+      if (section) section.hidden = false;
+    })
+    .catch(() => {});
+}
+
 const customerForm = byId('customer-form');
 if (customerForm) {
   let previewDemo = false;

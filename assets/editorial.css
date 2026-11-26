@@ -265,3 +265,36 @@ h3 {font-size:clamp(1.9rem,3.4vw,3rem);}
 .cm-note {margin:1.4rem 0 0;color:var(--muted);font-size:.92rem;}
 .community-page .project-card h3 {font-size:clamp(1.7rem,2.6vw,2.2rem);}
 @media(max-width:760px) {.fund-grid {grid-template-columns:1fr;} .give-ways div {grid-template-columns:1fr;gap:.25rem;}}
+
+/* Art listings (Nov 26 2026): artist pages and the White Gallery show the
+   pieces staff post at staff.sunworks.ca/art; artists edit their own words. */
+.artist-page .page-head .eyebrow {margin:0 0 .6rem;color:var(--rust);text-transform:uppercase;font-weight:700;}
+.artist-intro {display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(1.6rem,5vw,4.5rem);align-items:start;}
+.artist-intro figure {margin:0;}
+.artist-intro figure img {width:100%;aspect-ratio:4/5;object-fit:cover;display:block;}
+.artist-intro h2 {font-size:clamp(2.2rem,4vw,3.2rem);margin:0 0 1rem;}
+.artist-intro p {color:var(--ink);line-height:1.7;margin:0 0 1.05rem;max-width:62ch;}
+.artist-statement {margin-top:1.6rem;border-top:1px solid var(--line);padding-top:1.1rem;}
+.artist-statement summary {cursor:pointer;font:1.55rem var(--display);color:var(--ink);list-style-position:outside;}
+.artist-statement summary:hover {color:var(--rust);}
+.artist-statement[open] summary {margin-bottom:.9rem;}
+.artist-website {margin-top:1.2rem;}
+.art-works {border-top:1px solid var(--line);}
+.art-works h2 {font-size:clamp(2.3rem,4vw,3.4rem);margin:0 0 .4rem;}
+.art-works .art-intro {color:var(--muted);margin:0 0 1.8rem;max-width:60ch;}
+.art-grid .panel img.art-photo {height:clamp(220px,24vw,320px);}
+.art-card h3 {margin:.2rem 0 .2rem;}
+.art-card .art-artist {display:inline-block;margin-top:.2rem;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--rust);text-decoration:none;}
+.art-card .art-artist:hover {text-decoration:underline;}
+.panel p.art-meta {margin:.1rem 0 .3rem;font-size:.95rem;}
+.panel p.art-where {margin:.2rem 0 .6rem;font-size:.92rem;font-style:italic;}
+.art-description p {margin:.5rem 0;}
+.art-story {margin:.6rem 0 .4rem;border-left:3px solid var(--line);padding-left:.9rem;}
+.art-story summary {cursor:pointer;font-weight:700;color:var(--ink);}
+.art-story summary:hover {color:var(--rust);}
+.art-story p {font-size:.97rem;}
+@media(max-width:760px){
+ .artist-intro {grid-template-columns:1fr;}
+ .artist-intro figure img {aspect-ratio:1/1;max-height:420px;}
+}
+.panel .art-placeholder {height:clamp(220px,24vw,320px);font-size:1.6rem;}
